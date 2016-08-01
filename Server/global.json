@@ -1,0 +1,15 @@
+{
+    "sdk": {
+        "version": "1.0.0-preview2-003121",
+        "runtime": "coreclr", 
+        "architecture": "x64"
+    }, 
+    "projects": [
+        "src/0 - Clients", 
+        "src/1 - Services", 
+        "src/2 - Engines", 
+        "src/3 - Accessors", 
+        "src/4 - Core", 
+        "src/5 - Utility"
+    ]
+}
