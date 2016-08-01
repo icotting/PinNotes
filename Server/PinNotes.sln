@@ -30,6 +30,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unit", "Unit", "{24718ACD-3
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "PinNotes.Accessors.Domain.Tests", "test\Unit\PinNotes.Accessors.Domain.Tests\PinNotes.Accessors.Domain.Tests.xproj", "{A555B1EF-1134-47E2-A769-B8C3093D9140}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "PinNotes.Web", "src\0 - Clients\PinNotes.Web\PinNotes.Web.xproj", "{FF0A4908-E58F-41DB-9A8B-7FCB99251206}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{A555B1EF-1134-47E2-A769-B8C3093D9140}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A555B1EF-1134-47E2-A769-B8C3093D9140}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A555B1EF-1134-47E2-A769-B8C3093D9140}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF0A4908-E58F-41DB-9A8B-7FCB99251206}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF0A4908-E58F-41DB-9A8B-7FCB99251206}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF0A4908-E58F-41DB-9A8B-7FCB99251206}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF0A4908-E58F-41DB-9A8B-7FCB99251206}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,5 +64,6 @@ Global
 		{77775782-7249-4403-8A54-3A4A0DD64E47} = {354E4B7B-EF11-43AD-8C21-3481408E4E61}
 		{24718ACD-3645-45BD-8E7F-F2B4683DB139} = {31943D95-24A9-4E09-8475-9BDC6EC0E21C}
 		{A555B1EF-1134-47E2-A769-B8C3093D9140} = {24718ACD-3645-45BD-8E7F-F2B4683DB139}
+		{FF0A4908-E58F-41DB-9A8B-7FCB99251206} = {58A26585-6A00-44FF-BA53-86AC53147061}
 	EndGlobalSection
 EndGlobal
