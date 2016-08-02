@@ -6,7 +6,7 @@ namespace PinNotes.Accessors.Domain.Contracts.DTO
     public class User
     {
         [DataMember]
-        public long UserId { get; set; }
+        public string UserId { get; set; }
 
         [DataMember]
         public string FirstName { get; set; }

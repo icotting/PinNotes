@@ -10,7 +10,7 @@ namespace PinNotes.Accessors.Domain.Contracts.DTO
     public class Pin
     {
         [DataMember]
-        public long PinId { get; set; }
+        public string PinId { get; set; }
 
         [DataMember]
         public string Name { get; set; }
@@ -22,6 +22,6 @@ namespace PinNotes.Accessors.Domain.Contracts.DTO
         public double? Longitude { get; set; }
 
         [DataMember]
-        public long BelongsTo { get; set; }
+        public string BelongsTo { get; set; }
     }
 }

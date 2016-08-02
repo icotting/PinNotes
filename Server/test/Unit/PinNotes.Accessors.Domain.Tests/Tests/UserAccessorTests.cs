@@ -6,16 +6,32 @@ using PinNotes.Accessors.Domain.Core.EntityFramework;
 using PinNotes.Accessors.Domain.Core;
 using System.Linq;
 using System;
+using PinNotes.Accessors.Domain.Config;
+using Microsoft.EntityFrameworkCore;
 
 namespace PinNotes.Accessors.Domain.Tests.Tests
 {
-    public class UserAccessorTests
+    public class UserAccessorTests : IDisposable
     {
+        private IServiceProvider _provider;
+
+        public UserAccessorTests()
+        {
+            _provider = new ServiceCollection().AddEntityFrameworkSqlite()
+            .AddPersistence(options => options.UseSqlite(
+                string.Format("Filename=../../../../../{0}.db", Guid.NewGuid().ToString())))
+                .BuildServiceProvider();
+
+            var context = _provider.GetService<PersistenceContext>();
+
+            context.Database.EnsureCreated();
+            Initializer.Seed(context);
+        }
+
         [Fact]
         public void TestAllUsers()
         {
-            var provider = Initializer.Init();
-            IUserAccessor accessor = provider.GetService<IUserAccessor>();
+            IUserAccessor accessor = this._provider.GetService<IUserAccessor>();
 
             Assert.Equal(3, accessor.AllUsers().Count);
         }
@@ -23,11 +39,10 @@ namespace PinNotes.Accessors.Domain.Tests.Tests
         [Fact]
         public void TestFindUser()
         {
-            var provider = Initializer.Init();
-            IUserAccessor accessor = provider.GetService<IUserAccessor>();
+            IUserAccessor accessor = this._provider.GetService<IUserAccessor>();
 
-            var ian = accessor.FindUser(100);
-            var bill = accessor.FindUser(300);
+            var ian = accessor.FindUser("ian");
+            var bill = accessor.FindUser("bill");
 
             Assert.NotEqual(ian, bill);
 
@@ -37,7 +52,7 @@ namespace PinNotes.Accessors.Domain.Tests.Tests
             Assert.Equal("Lincoln, NE", ian.Location);
             Assert.Equal("Gates", bill.LastName);
 
-            var otherian = accessor.FindUser("fakeian@unl.edu");
+            var otherian = accessor.FindUserByEmail("fakeian@unl.edu");
             Assert.NotNull(otherian);
             Assert.Equal(ian, otherian);
             Assert.NotEqual(bill, otherian);
@@ -46,16 +61,14 @@ namespace PinNotes.Accessors.Domain.Tests.Tests
         [Fact]
         public void TestAddUser()
         {
-            var provider = Initializer.Init();
-            IUserAccessor accessor = provider.GetService<IUserAccessor>();
-            IUnitOfWork uow = provider.GetService<IUnitOfWork>();
-            PersistenceContext context = provider.GetService<PersistenceContext>();
+            IUserAccessor accessor = this._provider.GetService<IUserAccessor>();
+            IUnitOfWork uow = this._provider.GetService<IUnitOfWork>();
+            PersistenceContext context = this._provider.GetService<PersistenceContext>();
 
             Assert.Equal(3, context.Users.Count());
 
             var user = new Contracts.DTO.User()
             {
-                UserId = 1,
                 AvatarUrl = @"http://www.google.com",
                 Email = "test@user.com",
                 FirstName = "Test",
@@ -63,14 +76,16 @@ namespace PinNotes.Accessors.Domain.Tests.Tests
                 Location = "Any Place, USA"
             };
 
-            accessor.AddUser(user);
+            user = accessor.AddUser(user);
             uow.Commit();
-            Assert.Equal(4, context.Users.Count());
 
-            Assert.Equal("Any Place, USA", context.Users.Where(u => u.UserId == 1)
+            Assert.Equal(4, context.Users.Count());
+            var users = context.Users.ToList();
+
+            Assert.Equal("Any Place, USA", context.Users.Where(u => u.UserId == user.UserId)
                 .FirstOrDefault().Location);
 
-            Assert.Equal(user, accessor.FindUser(1));
+            Assert.Equal(user, accessor.FindUser(user.UserId));
 
             /* Test some bad data */
             Assert.Throws<ArgumentException>(() =>
@@ -96,7 +111,7 @@ namespace PinNotes.Accessors.Domain.Tests.Tests
                     LastName = "User",
                     Location = "Death Valley",
                     Email = "bad@user.com",
-                    UserId = 300
+                    UserId = "bill"
                 });
             });
         }
@@ -104,14 +119,13 @@ namespace PinNotes.Accessors.Domain.Tests.Tests
         [Fact]
         public void TestRemoveUser()
         {
-            var provider = Initializer.Init();
-            IUserAccessor accessor = provider.GetService<IUserAccessor>();
-            IUnitOfWork uow = provider.GetService<IUnitOfWork>();
-            PersistenceContext context = provider.GetService<PersistenceContext>();
+            IUserAccessor accessor = this._provider.GetService<IUserAccessor>();
+            IUnitOfWork uow = this._provider.GetService<IUnitOfWork>();
+            PersistenceContext context = this._provider.GetService<PersistenceContext>();
 
             Assert.Equal(3, context.Users.Count());
 
-            var user = new Contracts.DTO.User() { UserId = 300 };
+            var user = new Contracts.DTO.User() { UserId = "bill" };
 
             accessor.RemoveUser(user);
             uow.Commit();
@@ -120,7 +134,7 @@ namespace PinNotes.Accessors.Domain.Tests.Tests
 
             Assert.Throws<ArgumentException>(() => 
             {
-                accessor.RemoveUser(new Contracts.DTO.User() { UserId = 1 });
+                accessor.RemoveUser(new Contracts.DTO.User() { UserId = user.UserId });
             });
 
 
@@ -128,6 +142,11 @@ namespace PinNotes.Accessors.Domain.Tests.Tests
             {
                 accessor.RemoveUser(null);
             });
+        }
+
+        public void Dispose()
+        {
+            this._provider.GetService<PersistenceContext>().Database.EnsureDeleted();
         }
     }
 }

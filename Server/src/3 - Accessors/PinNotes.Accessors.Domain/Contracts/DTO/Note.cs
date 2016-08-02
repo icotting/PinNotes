@@ -10,12 +10,12 @@ namespace PinNotes.Accessors.Domain.Contracts.DTO
     public class Note
     {
         [DataMember]
-        public long NoteId { get; set; }
+        public string NoteId { get; set; }
         [DataMember]
         public string Content { get; set; }
         [DataMember]
         public DateTime Added { get; set; }
         [DataMember]
-        public long BelongsTo { get; set; }
+        public string BelongsTo { get; set; }
     }
 }

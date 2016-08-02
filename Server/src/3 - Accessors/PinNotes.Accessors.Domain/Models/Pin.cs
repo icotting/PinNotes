@@ -9,7 +9,7 @@ namespace PinNotes.Accessors.Domain.Models
     public class Pin
     {
         [Key]
-        public long PinId { get; set; }
+        public string PinId { get; set; }
         public string Name { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }

@@ -20,7 +20,7 @@ namespace PinNotes.Accessors.Domain.Core
             this._users = dbSetFactory.CreateDbSet<Models.User>();
         }
 
-        public long AddNode(Contracts.DTO.Note note)
+        public Contracts.DTO.Note AddNote(Contracts.DTO.Note note)
         {
             var pin = this._pins.Where(p => p.PinId == note.BelongsTo).FirstOrDefault();
 
@@ -30,18 +30,21 @@ namespace PinNotes.Accessors.Domain.Core
             }
             else
             {
-                var entity = this._notes.Add(new Models.Note()
+                string id = Guid.NewGuid().ToString();
+                this._notes.Add(new Models.Note()
                 {
+                    NoteId = id,
                     Added = DateTime.Now,
                     Content = note.Content,
                     Pin = pin
                 });
 
-                return entity.Entity.NoteId;
+                note.NoteId = id;
+                return note;
             }
         }
 
-        public long AddPin(Contracts.DTO.Pin pin)
+        public Contracts.DTO.Pin AddPin(Contracts.DTO.Pin pin)
         {
             if ( pin.Latitude == null || pin.Longitude == null || pin.Name == null)
             {
@@ -56,20 +59,23 @@ namespace PinNotes.Accessors.Domain.Core
                 }
                 else
                 {
-                    var entity = this._pins.Add(new Models.Pin()
+                    var id = Guid.NewGuid().ToString();
+                    this._pins.Add(new Models.Pin()
                     {
+                        PinId = id,
                         Latitude = pin.Latitude.Value,
                         Longitude = pin.Longitude.Value,
                         Name = pin.Name,
                         User = user
                     });
 
-                    return entity.Entity.PinId;
+                    pin.PinId = id;
+                    return pin;
                 }
             }
         }
 
-        public Contracts.DTO.Note FindNote(long id)
+        public Contracts.DTO.Note FindNote(string id)
         {
             var note = this._notes.Where(n => n.NoteId == id).FirstOrDefault();
             return note == null ? null : new Contracts.DTO.Note()

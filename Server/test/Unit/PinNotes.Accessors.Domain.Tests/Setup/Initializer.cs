@@ -1,23 +1,19 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿
 using System;
-using PinNotes.Accessors.Domain.Config;
 using PinNotes.Accessors.Domain.Core;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace PinNotes.Accessors.Domain.Tests.Setup
 {
     public static class Initializer
     {
-        public static IServiceProvider Init()
+        public static void Seed(PersistenceContext context)
         {
-            IServiceProvider provider = new ServiceCollection().AddEntityFrameworkInMemoryDatabase()
-            .AddPersistence(options => options.UseInMemoryDatabase()).BuildServiceProvider();
-            provider.GetService<PersistenceContext>().Database.EnsureDeleted();
-
             // seed some data
-            _UserSeed(provider.GetService<PersistenceContext>());
-
-            return provider;
+            _UserSeed(context);
+            _NoteSeed(context);
         }
 
         private static void _UserSeed(PersistenceContext context)
@@ -29,7 +25,7 @@ namespace PinNotes.Accessors.Domain.Tests.Setup
                 FirstName = "Ian",
                 LastName = "Cottingham",
                 Location = "Lincoln, NE",
-                UserId = 100
+                UserId = "ian"
             });
 
             context.Users.Add(new Models.User()
@@ -39,7 +35,7 @@ namespace PinNotes.Accessors.Domain.Tests.Setup
                 FirstName = "Zach",
                 LastName = "Christensen",
                 Location = "Lincoln, NE",
-                UserId = 200
+                UserId = "zach"
             });
 
             context.Users.Add(new Models.User()
@@ -49,8 +45,107 @@ namespace PinNotes.Accessors.Domain.Tests.Setup
                 FirstName = "Bill",
                 LastName = "Gates",
                 Location = "Seattle, WA", 
-                UserId = 300
+                UserId = "bill"
             });
+
+            context.SaveChanges();
+        }
+
+        private static void _NoteSeed(PersistenceContext context)
+        {
+            var ian = context.Users.Where(u => u.UserId == "ian").FirstOrDefault();
+            var zach = context.Users.Where(u => u.UserId == "zach").FirstOrDefault();
+
+            var kauffman = new Models.Pin()
+            {
+                Latitude = 40.819661,
+                Longitude = -96.70041,
+                Name = "Kauffman",
+                PinId = "kauf"
+            };
+
+            var fuse = new Models.Pin()
+            {
+                Latitude = 40.81442,
+                Longitude = -96.710235,
+                Name = "FUSE",
+                PinId = "fuse"
+            };
+
+            var destinations = new Models.Pin()
+            {
+                Latitude = 40.826233,
+                Longitude = -96.70155,
+                Name = "Destinations",
+                PinId = "dest",
+            };
+
+            kauffman.Notes = new List<Models.Note>
+            {
+                new Models.Note()
+                {
+                    Added = DateTime.Now,
+                    Content = "Make sure to teach class",
+                    Pin = kauffman,
+                    NoteId = Guid.NewGuid().ToString()
+                },
+                new Models.Note()
+                {
+                    Added = DateTime.Now,
+                    Content = "Attend the weekly standup on Thursday",
+                    Pin = kauffman,
+                    NoteId = Guid.NewGuid().ToString()
+                },
+                new Models.Note()
+                {
+                    Added = DateTime.Now,
+                    Content = "Don't eat the donuts",
+                    Pin = kauffman,
+                    NoteId = Guid.NewGuid().ToString()
+                },
+            };
+
+            fuse.Notes = new List<Models.Note>
+            {
+                new Models.Note()
+                {
+                    Added = DateTime.Now,
+                    Content = "Use the FUSE wifi, it is faster than DPL",
+                    Pin = fuse,
+                    NoteId = Guid.NewGuid().ToString()
+                },
+                new Models.Note()
+                {
+                    Added = DateTime.Now,
+                    Content = "Avoid the elevator",
+                    Pin = fuse,
+                    NoteId = Guid.NewGuid().ToString()
+                }
+            };
+
+            destinations.Notes = new List<Models.Note>
+            {
+                new Models.Note()
+                {
+                    Added = DateTime.Now,
+                    Content = "Grab a coffee before heading to Kauffman, you'll thank yourself later",
+                    Pin = destinations,
+                    NoteId = Guid.NewGuid().ToString()
+                },
+                new Models.Note()
+                {
+                    Added = DateTime.Now,
+                    Content = "It's a longer walk than you think",
+                    Pin = destinations,
+                    NoteId = Guid.NewGuid().ToString()
+                }
+            };
+
+            ian.Pins = new List<Models.Pin> { kauffman, fuse };
+            zach.Pins = new List<Models.Pin> { destinations };
+
+            context.Entry(ian).State = EntityState.Modified;
+            context.Entry(zach).State = EntityState.Modified;
 
             context.SaveChanges();
         }

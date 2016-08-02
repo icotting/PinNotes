@@ -17,7 +17,7 @@ namespace PinNotes.Accessors.Domain.Core
             this._users = dbSetFactory.CreateDbSet<Models.User>();
         }
 
-        public long AddUser(Contracts.DTO.User user)
+        public Contracts.DTO.User AddUser(Contracts.DTO.User user)
         {
             if (user == null
                 || user.FirstName == null 
@@ -33,16 +33,22 @@ namespace PinNotes.Accessors.Domain.Core
             }
             else
             {
-                var entity = this._users.Add(new Models.User()
+                var id = Guid.NewGuid().ToString();
+
+                var userEntity = new Models.User()
                 {
+                    UserId = id,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    AvatarUrl = user.AvatarUrl, 
-                    Email = user.Email, 
+                    AvatarUrl = user.AvatarUrl,
+                    Email = user.Email,
                     Location = user.Location
-                });
+                };
 
-                return entity.Entity.UserId;
+                this._users.Add(userEntity);
+
+                user.UserId = id;
+                return user;
             }
         }
 
@@ -59,7 +65,7 @@ namespace PinNotes.Accessors.Domain.Core
             }).ToList<Contracts.DTO.User>();
         }
 
-        public Contracts.DTO.User FindUser(long userId)
+        public Contracts.DTO.User FindUser(string userId)
         {
             var user = this._users.Where(u => u.UserId == userId).FirstOrDefault();
 
@@ -81,7 +87,7 @@ namespace PinNotes.Accessors.Domain.Core
             }
         }
 
-        public Contracts.DTO.User FindUser(string email)
+        public Contracts.DTO.User FindUserByEmail(string email)
         {
             var user = this._users.Where(u => u.Email == email).FirstOrDefault();
 

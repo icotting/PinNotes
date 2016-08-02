@@ -9,7 +9,7 @@ namespace PinNotes.Accessors.Domain.Models
     public class Note
     {
         [Key]
-        public long NoteId { get; set; }
+        public string NoteId { get; set; }
         public string Content { get; set; }
         public DateTime Added { get; set; }
         public Pin Pin { get; set; }
