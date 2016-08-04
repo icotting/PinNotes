@@ -40,7 +40,11 @@ namespace PinNotes.Accessors.Domain.Tests.Tests
             var ian = userAccessor.FindUser("ian");
             var ianNotes = accessor.FindNotes(ian);
 
+            var zach = userAccessor.FindUser("zach");
+            var zachNotes = accessor.FindNotes(zach);
+
             Assert.Equal(5, ianNotes.Count);
+            Assert.Equal(2, zachNotes.Count);
         }
     }
 }
