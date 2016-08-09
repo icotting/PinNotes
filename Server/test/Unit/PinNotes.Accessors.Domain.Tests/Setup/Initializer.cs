@@ -87,21 +87,21 @@ namespace PinNotes.Accessors.Domain.Tests.Setup
                     Added = DateTime.Now,
                     Content = "Make sure to teach class",
                     Pin = kauffman,
-                    NoteId = Guid.NewGuid().ToString()
+                    NoteId = "TN1"
                 },
                 new Models.Note()
                 {
                     Added = DateTime.Now,
                     Content = "Attend the weekly standup on Thursday",
                     Pin = kauffman,
-                    NoteId = Guid.NewGuid().ToString()
+                    NoteId = "TN2"
                 },
                 new Models.Note()
                 {
                     Added = DateTime.Now,
                     Content = "Don't eat the donuts",
                     Pin = kauffman,
-                    NoteId = Guid.NewGuid().ToString()
+                    NoteId = "TN3"
                 },
             };
 
@@ -112,7 +112,7 @@ namespace PinNotes.Accessors.Domain.Tests.Setup
                     Added = DateTime.Now,
                     Content = "Use the FUSE wifi, it is faster than DPL",
                     Pin = fuse,
-                    NoteId = Guid.NewGuid().ToString()
+                    NoteId = "TN4"
                 },
                 new Models.Note()
                 {
@@ -130,14 +130,14 @@ namespace PinNotes.Accessors.Domain.Tests.Setup
                     Added = DateTime.Now,
                     Content = "Grab a coffee before heading to Kauffman, you'll thank yourself later",
                     Pin = destinations,
-                    NoteId = Guid.NewGuid().ToString()
+                    NoteId = "TN5"
                 },
                 new Models.Note()
                 {
                     Added = DateTime.Now,
                     Content = "It's a longer walk than you think",
                     Pin = destinations,
-                    NoteId = Guid.NewGuid().ToString()
+                    NoteId = "TN6"
                 }
             };
 

@@ -23,5 +23,27 @@ namespace PinNotes.Accessors.Domain.Contracts.DTO
 
         [DataMember]
         public string BelongsTo { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is DTO.Pin)
+            {
+                return ((DTO.Pin)obj).GetHashCode() == this.GetHashCode();
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return this.ToString().GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return this.PinId;
+        }
     }
 }

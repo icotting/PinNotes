@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using PinNotes.Accessors.Domain.Contracts.DTO;
 
 namespace PinNotes.Accessors.Domain.Core
 {
@@ -22,31 +23,52 @@ namespace PinNotes.Accessors.Domain.Core
 
         public Contracts.DTO.Note AddNote(Contracts.DTO.Note note)
         {
-            var pin = this._pins.Where(p => p.PinId == note.BelongsTo).FirstOrDefault();
-
-            if ( pin == null )
+            if (note == null)
             {
-                throw new ArgumentException(string.Format("Pin {0} is not valid", note.BelongsTo));
+                throw new ArgumentException("Note must be non-null"); 
             }
             else
             {
-                string id = Guid.NewGuid().ToString();
-                this._notes.Add(new Models.Note()
-                {
-                    NoteId = id,
-                    Added = DateTime.Now,
-                    Content = note.Content,
-                    Pin = pin
-                });
 
-                note.NoteId = id;
-                return note;
+                var pin = note.BelongsTo == null ? null :
+                    this._pins.Where(p => p.PinId == note.BelongsTo).FirstOrDefault();
+
+                if (pin == null)
+                {
+                    throw new ArgumentException(string.Format("Pin {0} is not valid", note.BelongsTo));
+                }
+                else if (note.NoteId != null)
+                {
+                    throw new ArgumentException("Note ID is not null, ID values cannot be specified");
+                }
+                else
+                {
+                    string id = Guid.NewGuid().ToString();
+                    this._notes.Add(new Models.Note()
+                    {
+                        NoteId = id,
+                        Added = DateTime.Now,
+                        Content = note.Content,
+                        Pin = pin
+                    });
+
+                    note.NoteId = id;
+                    return note;
+                }
             }
         }
 
         public Contracts.DTO.Pin AddPin(Contracts.DTO.Pin pin)
         {
-            if ( pin.Latitude == null || pin.Longitude == null || pin.Name == null)
+            if (pin == null)
+            {
+                throw new ArgumentException("Pin must be non-null");
+            }
+            else if (pin.PinId != null)
+            {
+                throw new ArgumentException("Pin ID is not null, ID values cannot be specified");
+            }
+            else if ( pin.Latitude == null || pin.Longitude == null || pin.Name == null)
             {
                 throw new ArgumentException("A pin must have a valid latitude, longitude, and name");
             }
@@ -89,6 +111,10 @@ namespace PinNotes.Accessors.Domain.Core
 
         public ICollection<Contracts.DTO.Note> FindNotes(Contracts.DTO.Pin pin)
         {
+            if (pin == null)
+            {
+                throw new ArgumentException("The pin cannot be null");
+            }
             var pentity = this._pins.Where(p => p.PinId == pin.PinId).FirstOrDefault();
             if ( pentity != null )
             {
@@ -109,6 +135,11 @@ namespace PinNotes.Accessors.Domain.Core
 
         public ICollection<Contracts.DTO.Note> FindNotes(Contracts.DTO.User user)
         {
+            if (user == null)
+            {
+                throw new ArgumentException("The user cannot be null");
+            }
+
             var notes = this._notes.Where(n => n.Pin.User.UserId == user.UserId);
 
             if (notes != null || notes.Count() > 0)
@@ -130,10 +161,15 @@ namespace PinNotes.Accessors.Domain.Core
         public ICollection<Contracts.DTO.Note> FindNotes(Contracts.DTO.BoundingBox box, 
             Contracts.DTO.User user)
         {
+            if ( user == null || box == null )
+            {
+                throw new ArgumentException("The user and bounding box must be non-null");
+            }
+            
             var notes = this._notes.Where(n => n.Pin.Latitude >= box.South
                 && n.Pin.Latitude <= box.North
-                && n.Pin.Longitude >= box.East
-                && n.Pin.Longitude <= box.West
+                && n.Pin.Longitude <= box.East
+                && n.Pin.Longitude >= box.West
                 && n.Pin.User.UserId == user.UserId);
 
             if (notes != null && notes.Count() > 0)
@@ -154,6 +190,11 @@ namespace PinNotes.Accessors.Domain.Core
 
         public ICollection<Contracts.DTO.Pin> FindPins(Contracts.DTO.User user)
         {
+            if (user==null)
+            {
+                throw new ArgumentException("The pin cannot be null");
+            }
+
             var uentity = this._users.Where(u => u.UserId == user.UserId).FirstOrDefault();
             if ( uentity != null && uentity.Pins != null && uentity.Pins.Count > 0)
             {
@@ -173,10 +214,15 @@ namespace PinNotes.Accessors.Domain.Core
         public ICollection<Contracts.DTO.Pin> FindPins(Contracts.DTO.BoundingBox box, 
             Contracts.DTO.User user)
         {
+            if ( box == null || user == null)
+            {
+                throw new ArgumentException("The user and bounding box must be non-null");
+            }
+
             var pins = this._pins.Where(p => p.Latitude >= box.South
                 && p.Latitude <= box.North
-                && p.Longitude >= box.East
-                && p.Longitude <= box.West
+                && p.Longitude <= box.East
+                && p.Longitude >= box.West
                 && p.User.UserId == user.UserId);
 
             if (pins != null && pins.Count() > 0)
@@ -198,12 +244,55 @@ namespace PinNotes.Accessors.Domain.Core
 
         public void RemoveNote(Contracts.DTO.Note note)
         {
-            this._notes.Remove(this._notes.Where(n => n.NoteId == note.NoteId).First());
+            if (note == null)
+            {
+                throw new ArgumentException("Note must be non-null");
+            }
+            else
+            {
+                var entity = this._notes.Where(n => n.NoteId == note.NoteId).FirstOrDefault();
+                if (entity == null)
+                {
+                    throw new ArgumentException(string.Format("{0} was not found", note.NoteId));
+                }
+                else
+                {
+                    this._notes.Remove(entity);
+                }
+            }
         }
 
         public void RemovePin(Contracts.DTO.Pin pin)
         {
-            this._pins.Remove(this._pins.Where(p => p.PinId == pin.PinId).First());
+            if (pin == null)
+            {
+                throw new ArgumentException("Pin must be non-null");
+            }
+            else
+            {
+                var entity = this._pins.Where(p => p.PinId == pin.PinId).FirstOrDefault();
+                if ( entity == null )
+                {
+                    throw new ArgumentException(string.Format("{0} was not found", pin.PinId));
+                } 
+                else
+                {
+                    this._pins.Remove(entity);
+                }
+            }
+        }
+
+        public Contracts.DTO.Pin FindPin(string id)
+        {
+            var pin = this._pins.Where(p => p.PinId == id).FirstOrDefault();
+            return pin == null ? null : new Contracts.DTO.Pin()
+            {
+                BelongsTo = pin.User.UserId, 
+                Latitude = pin.Latitude, 
+                Longitude = pin.Longitude, 
+                Name = pin.Name, 
+                PinId = pin.PinId  
+            };
         }
     }
 }

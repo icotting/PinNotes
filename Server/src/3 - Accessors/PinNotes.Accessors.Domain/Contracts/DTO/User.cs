@@ -37,7 +37,12 @@ namespace PinNotes.Accessors.Domain.Contracts.DTO
 
         public override int GetHashCode()
         {
-            return this.Email.GetHashCode();
+            return this.ToString().GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return this.Email;
         }
     }
 }

@@ -17,5 +17,27 @@ namespace PinNotes.Accessors.Domain.Contracts.DTO
         public DateTime Added { get; set; }
         [DataMember]
         public string BelongsTo { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is DTO.Note)
+            {
+                return ((DTO.Note)obj).GetHashCode() == this.GetHashCode();
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return this.ToString().GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return this.NoteId;
+        }
     }
 }

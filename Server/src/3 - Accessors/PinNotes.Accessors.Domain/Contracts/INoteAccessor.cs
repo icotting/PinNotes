@@ -9,6 +9,7 @@ namespace PinNotes.Accessors.Domain.Contracts
         ICollection<DTO.Note> FindNotes(DTO.Pin pin);
         DTO.Note FindNote(string id);
 
+        DTO.Pin FindPin(string id);
         ICollection<DTO.Pin> FindPins(DTO.User user);
         ICollection<DTO.Pin> FindPins(DTO.BoundingBox box, DTO.User user);
 
