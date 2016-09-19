@@ -2,15 +2,6 @@ language: csharp
 sudo: required
 env:
   - CLI_VERSION=latest
-addons:
-  apt:
-    packages:
-    - gettext
-    - libcurl4-openssl-dev
-    - libicu-dev
-    - libssl-dev
-    - libunwind8
-    - zlib1g
 os:
   - linux
 branches:
