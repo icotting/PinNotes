@@ -1,5 +1,5 @@
-language: csharp
 sudo: required
+dist: trusty
 env:
   - CLI_VERSION=latest
 os:
