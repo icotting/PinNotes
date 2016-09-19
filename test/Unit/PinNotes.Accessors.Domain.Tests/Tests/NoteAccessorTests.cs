@@ -87,7 +87,7 @@ namespace PinNotes.Accessors.Domain.Tests.Tests
         public void TestFindNote()
         {
             INoteAccessor accessor = this._provider.GetService<INoteAccessor>();
-            Assert.Equal("Don't eat the donutsdfsdsdfsdfs", accessor.FindNote("TN3").Content);
+            Assert.Equal("Don't eat the donuts", accessor.FindNote("TN3").Content);
             Assert.Null(accessor.FindNote("TN100"));
             Assert.Null(accessor.FindNote(null));
         }
